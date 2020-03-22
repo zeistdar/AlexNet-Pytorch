@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-
+from torch import Tensor
 
 __all__ = ['AlexNet']
 
@@ -74,6 +74,8 @@ class AlexNet(nn.Module):
         x = self.relu(x)
 
         x = self.maxpool3(x)
+
+        x = x.view(-1, 256 * 6 * 6)
 
         x = self.dropout(x)
         x = self.fc1(x)
