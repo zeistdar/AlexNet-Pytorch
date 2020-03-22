@@ -2,7 +2,7 @@ import numpy as np
 import torch
 from torch import Tensor
 
-def RandomCrop(object):
+class RandomCrop(object):
     """
         Randomly crop parts  of the image with the specific output dimension
         Args:
@@ -27,7 +27,7 @@ def RandomCrop(object):
 
 
 
-def HorizontalFlip(object):
+class HorizontalFlip(object):
     """
         Random horizontal flip of the image
         Args:
@@ -43,7 +43,7 @@ def HorizontalFlip(object):
         return img
 
         
-def VerticalFlip(object):
+class VerticalFlip(object):
     """
         Random Vertical flip of the image
         Args:
@@ -51,7 +51,7 @@ def VerticalFlip(object):
     """
     def __init__(self, prob: float = 0.5) -> None:
         self.prob = prob
-        self.random - np.random.random_sample()
+        self.random = np.random.random_sample()
     
     def __call__(self, img: np.ndarray) -> np.ndarray:
         if self.random < self.prob:
@@ -59,7 +59,7 @@ def VerticalFlip(object):
         return img
 
 
-def CenterCrop(object):
+class CenterCrop(object):
     """
         Center Crop of the image
         Args:
@@ -86,9 +86,11 @@ def CenterCrop(object):
         return img
     
 
-def ToTensor(object):
+class ToTensor(object):
     """
         Convert image to Tensor
+        Args:
+            is_image_channel_first (bool): Whether the passed image is channel first or channel 
     """
     def __init__(self, is_image_channel_first: bool = False):
         self. is_image_channel_first = is_image_channel_first = False
@@ -96,12 +98,15 @@ def ToTensor(object):
     def __call__(self, img: np.ndarray) -> Tensor:
         if not self.is_image_channel_first:
             img = img.traspose((2, 0, 1))
-        return img
+        return Tensor.from_numpy(img)
 
 
-def Normalize(object)
+class Normalize(object):
     """
         Normalize the image with the provided mean and std
+        Args:
+            mean (np.ndarray or list) : The mean for the normalization of the image
+            std (np.ndarray or list): The std for the normalization of the image
     """
     def __init__(self, mean, std):
         self.mean = mean

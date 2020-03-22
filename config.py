@@ -1,5 +1,3 @@
-
-
 PARAMETERS = {
     "NUMBER_EPOCHS": 100,
     "BATCH_SIZE": 128,
@@ -9,8 +7,16 @@ PARAMETERS = {
     "NUM_CLASSES": 1000,
     "LEARNING_RATE": 0.001,
     "LEARNING_RATE_DECAY": 0.005,
-    "KEEP_PROB": 0.5
+    "KEEP_PROB": 0.5,
+    "LR_SC_STEP_SIZE": 30,
+    "LR_SC_GAMMA": 0.1,
+    "SHUFFLE": True,
+    "NUM_WORKERS": 8
 }
+
+
+
+DEVICE_IDS = [0, 1, 2, 3]
 
 
 
