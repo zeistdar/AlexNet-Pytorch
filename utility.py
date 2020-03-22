@@ -40,15 +40,3 @@ def separate_dataset_and_classes(input_directory: str = "/home/zeeshan/AlexNet-P
     class_Y = label_encoder(class_Y)
     
     return image_X, class_Y
-        
-
-
-
-
-
-    
-
-
-
-
-

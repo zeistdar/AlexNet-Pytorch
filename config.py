@@ -17,12 +17,3 @@ PARAMETERS = {
 
 
 DEVICE_IDS = [0, 1, 2, 3]
-
-
-
-
-
-
-
-
-
