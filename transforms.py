@@ -91,7 +91,7 @@ def ToTensor(object):
         Convert image to Tensor
     """
     def __init__(self, is_image_channel_first: bool = False):
-        self. is_image_channel_first = is_image_channel_first: bool = False
+        self. is_image_channel_first = is_image_channel_first = False
 
     def __call__(self, img: np.ndarray) -> Tensor:
         if not self.is_image_channel_first:
