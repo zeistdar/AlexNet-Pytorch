@@ -34,12 +34,12 @@ def separate_dataset_and_classes(input_directory: str = "/home/zeeshan/AlexNet-P
     class_Y = []
 
     for img in all_files:
-        image_class = os.path.split(os.path.dirname(img))[-2]
+        image_class = img.split('/')[-3]
         image_array = io.imread(img)
-        image_X.append(image_array)
-        class_Y.append(image_class)
+        if image_array.ndim == 3:
+            image_X.append(image_array)
+            class_Y.append(image_class)
     class_Y, enc = label_encoder(class_Y)
-    
     return image_X, class_Y, enc
 
 def separate_classes_val_test( enc: LabelEncoder, input_directory: str = "/home/zeeshan/AlexNet-Pytorch/tiny-imagenet-200", type_dataset: str = "val", img_type: str = "JPEG", annotation_filename: str = "val_annotations.txt"):
@@ -66,11 +66,9 @@ def separate_classes_val_test( enc: LabelEncoder, input_directory: str = "/home/
         class_name.append(full_line[1])
 
     Y = enc.transform(class_name)
-
     for img in all_files:
         image_array = io.imread(img)
-        image_X.append(image_array)
+        if image_array.ndim == 3:
+            image_X.append(image_array)
     
     return image_X, Y
-
-    

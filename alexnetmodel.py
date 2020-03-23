@@ -16,7 +16,7 @@ class AlexNet(nn.Module):
                 num_classes(int): Number of classes to predict from this model
         """
 
-        super.__init__()
+        super().__init__()
 
         self.num_classes = num_classes
         self.conv1 = nn.Conv2d(in_channels = 3, out_channels = 96, kernel_size = 11, stride = 4, bias = True)
@@ -53,12 +53,13 @@ class AlexNet(nn.Module):
         Return:
             x (tensor): Output Tensor
         """
-
+        print(x.shape)
         x = self.conv1(x)
+        print(x.shape)
         x = self.relu(x)
         x = self.LRN1(x)
         x = self.maxpool1(x)
-
+        print(x.shape)
         x = self.conv2(x)
         x = self.relu(x)
         x = self.LRN2(x)
@@ -87,8 +88,3 @@ class AlexNet(nn.Module):
 
         x = self.fc3(x)
         return x        
-
-
-
-
-

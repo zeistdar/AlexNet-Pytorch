@@ -14,6 +14,8 @@ PARAMETERS = {
     "NUM_WORKERS": 8
 }
 
+INPUT_DIR = '/'
+LOG_DIR_PATH = 'tensorboard_output'
 
 
 DEVICE_IDS = [0, 1, 2, 3]

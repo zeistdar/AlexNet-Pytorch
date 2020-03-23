@@ -1,5 +1,6 @@
 import numpy as np
 import torch
+import torchvision.transforms.functional as F
 from torch import Tensor
 
 class RandomCrop(object):
@@ -93,31 +94,27 @@ class ToTensor(object):
             is_image_channel_first (bool): Whether the passed image is channel first or channel 
     """
     def __init__(self, is_image_channel_first: bool = False):
-        self. is_image_channel_first = is_image_channel_first = False
+        self.is_image_channel_first = is_image_channel_first
 
     def __call__(self, img: np.ndarray) -> Tensor:
+        if img.ndim == 2:
+            img = np.expand_dims(img, axis = 0)
         if not self.is_image_channel_first:
-            img = img.traspose((2, 0, 1))
-        return Tensor.from_numpy(img)
+            img = img.transpose((2, 0, 1))
+        return torch.from_numpy(img).float()
 
 
 class Normalize(object):
     """
         Normalize the image with the provided mean and std
         Args:
-            mean (np.ndarray or list) : The mean for the normalization of the image
-            std (np.ndarray or list): The std for the normalization of the image
+            mean (np.ndarray or tuple) : The mean for the normalization of the image
+            std (np.ndarray or tuple): The std for the normalization of the image
     """
-    def __init__(self, mean, std):
+    def __init__(self, mean: tuple, std: tuple) -> Tensor:
         self.mean = mean
         self.std = std
     
     def __call__(self, img):
-        assert isinstance(img, np.ndarray)
-
-        return (img - self.mean) / self.std
-            
-        
-
-
-
+        assert isinstance(img, Tensor)
+        return F.normalize(img, self.mean, self.std)
