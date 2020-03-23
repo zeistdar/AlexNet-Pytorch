@@ -1,6 +1,8 @@
 import torch
 from torch.utils import data
 from utility import separate_dataset_and_classes
+import numpy as np
+from torchvision import transforms
 
 class AlexNetDataLoader(data.Dataset):
     """
@@ -11,14 +13,14 @@ class AlexNetDataLoader(data.Dataset):
             img_type (str): The format of the image in the folder.[JPEG, jpeg, jpg, png]
             transform (object): The transformation objects that are to performed on the image
     """
-    def __init__(self, input_path: str = "/home/zeeshan/AlexNet-Pytorch/tiny-imagenet-200", type_dataset: str = "train", img_type: str = "JPEG", transform = None  ):
-        self.images, self.classes = separate_dataset_and_classes(input_path, type_dataset, img_type)
+    def __init__(self, X: np.ndarray, Y: (list, np.ndarray), transform: transforms = None):
+        self.images, self.classes = X, Y
         self.transform = transform
     
     def __len__(self):
         return len(self.images)
     
-    def __getitem__(self, idx):
+    def __getitem__(self, idx: int):
         if self.transform:
             self.images[idx] = self.transform(self.images[idx])
         return self.images[idx], self.classes[idx]

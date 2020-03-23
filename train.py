@@ -9,6 +9,7 @@ import alexnetmodel
 from transforms import CenterCrop, HorizontalFlip, VerticalFlip, ToTensor, Normalize 
 from torchvision import transforms
 from torch.utils import data
+from utility import separate_dataset_and_classes, separate_classes_val_test
 
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -24,12 +25,26 @@ if __name__ == '__main__':
         HorizontalFlip(),
         ToTensor(),
         Normalize(mean = [0.485, 0.456, 0.406], std = [0.229, 0.224, 0.225])
-    ]
+        ]
     )
-    dataset = alexnetdataloader.AlexNetDataLoader(transform= transformations)
+
+    train_X, train_Y, enc = separate_dataset_and_classes()
+    val_X, val_Y = separate_classes_val_test(enc = enc)
+
+    train_dataset = alexnetdataloader.AlexNetDataLoader(train_X, train_Y, transform = transformations)
+    val_dataset = alexnetdataloader.AlexNetDataLoader(val_X, val_Y, None)
+
+
 
     dataloader = data.DataLoader(
-        dataset,
+        train_dataset,
+        batch_size = config.PARAMETERS['BATCH_SIZE'],
+        shuffle = config.PARAMETERS['BATCH_SIZE'],
+        num_workers = config.PARAMETERS['NUM_WORKERS']
+    )
+
+    val_dataloader = data.DataLoader(
+        val_dataset,
         batch_size = config.PARAMETERS['BATCH_SIZE'],
         shuffle = config.PARAMETERS['BATCH_SIZE'],
         num_workers = config.PARAMETERS['NUM_WORKERS']
