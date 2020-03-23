@@ -53,13 +53,10 @@ class AlexNet(nn.Module):
         Return:
             x (tensor): Output Tensor
         """
-        print(x.shape)
         x = self.conv1(x)
-        print(x.shape)
         x = self.relu(x)
         x = self.LRN1(x)
         x = self.maxpool1(x)
-        print(x.shape)
         x = self.conv2(x)
         x = self.relu(x)
         x = self.LRN2(x)
