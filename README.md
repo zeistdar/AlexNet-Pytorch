@@ -3,6 +3,7 @@ Implementation of the [Alexnet](https://papers.nips.cc/paper/4824-imagenet-class
 
 # Dependencies
 
+To meet all the dependdencies type the following command in terminal.
 `python3 install -r requirements.txt`
 
 
