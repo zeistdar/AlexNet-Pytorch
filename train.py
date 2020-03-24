@@ -26,7 +26,7 @@ if __name__ == '__main__':
     alexnet = torch.nn.parallel.DataParallel(alexnet, device_ids=config.DEVICE_IDS)
     print("Initilaizing transfrmations to apply on the image")
     transformations = tf.Compose([
-        CenterCrop(64),
+        CenterCrop(227),
         # HorizontalFlip(),
         ToTensor(),
         Normalize(mean = (0.485, 0.456, 0.406), std = (0.229, 0.224, 0.225))
@@ -35,16 +35,14 @@ if __name__ == '__main__':
 
     print("Generating train images and labels")
     train_X, train_Y, enc = separate_dataset_and_classes()
-    print("Generating train images and labels")
+    print("Generating Validation images and labels")
     val_X, val_Y = separate_classes_val_test(enc = enc)
-
+    
     print("Initilazing data loader for Alexnet")
     train_dataset = alexnetdataloader.AlexNetDataLoader(train_X, train_Y, transform = transformations)
     val_dataset = alexnetdataloader.AlexNetDataLoader(val_X, val_Y, None)
 
     
-    print(len(train_dataset))
-    print(len(val_dataset))
     train_dataloader = data.DataLoader(
         train_dataset,
         batch_size = config.PARAMETERS['BATCH_SIZE'],
@@ -72,7 +70,10 @@ if __name__ == '__main__':
         total_train_loss = 0
         total_val_loss = 0
         total_steps = 0
-        val_accuracy = 0
+        total_val_correct = 0
+        total_val = 0
+        total_acc_epoch = 0
+        total_size_epoch = 0
 
         for imgs, labels in train_dataloader:
             imgs, labels = imgs.to(device), labels.to(device)
@@ -85,13 +86,17 @@ if __name__ == '__main__':
             optimizer.step()
             total_train_loss += loss.item()
             total_steps += 1
-            if total_steps == 10:
+            if total_steps % 10 == 0:
                 with torch.no_grad():
                     _, preds = torch.max(output, 1)
                     accuracy = torch.sum(preds == labels)
+                    print("Accuracy Item", accuracy.item())
+                    print("Lable size", labels.size(0))
+                    total_acc_epoch += accuracy.item()
+                    total_size_epoch += labels.size(0)
                     tbwiter.add_scalar('Train Loss', loss.item(), total_steps)
                     tbwiter.add_scalar('Train Accuracy', accuracy.item(), total_steps)
-                    print("Epoch {} \t Train Loss {} \t Train Accuracy {}".format(epoch + 1, total_train_loss, accuracy.item()))
+                    print("After {} steps in Epoch {}  \t Train Loss {} \t Train Accuracy {}".format(total_steps, epoch + 1, loss.item(), accuracy.item() / labels.size(0)))
                     for val_imgs, val_labels in val_dataloader:
                         val_imgs, val_labels = val_imgs.to(device), val_labels.to(device)
 
@@ -100,10 +105,12 @@ if __name__ == '__main__':
 
                         total_val_loss += val_loss.item()
                         _, val_preds = torch.max(val_output, 1)
-                        val_accuracy = torch.sum(val_preds == val_labels)
+                        total_val_correct += torch.sum(val_preds == val_labels).item()
+                        total_val += val_labels.size(0)
                     tbwiter.add_scalar('Validation Loss', loss.item(), total_steps)
-                    tbwiter.add_scalar('Validation Accuracy', val_accuracy.item(), total_steps)
-                    print("Epoch {} \t Validation Loss {} \t Validation Accuracy {}".format(epoch + 1, total_val_loss, val_accuracy))
+                    tbwiter.add_scalar('Validation Accuracy', total_val_correct / total_val, total_steps)
+                    print("Epoch {} \t Validation Loss {} \t Validation Accuracy {}".format(epoch + 1, total_val_loss, total_val_correct))
             
-        print("Total Valid loss", total_val_loss)
+        print("Total Train Epoch loss {} \t Total Train Accuracy after Epoch {}:\t {}".format(total_train_loss, epoch, total_acc_epoch / total_size_epoch))
+        print("Total Validation Epoch loss {} \t Total Vaidation Accuracy after Epoch {}:\t {}".format(epoch + 1, total_val_loss, total_val_correct / total_val))
         lrScheduler.step()
